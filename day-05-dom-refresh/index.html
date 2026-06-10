@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./styles.css">
+    <title>Document</title>
+</head>
+<body>
+
+    <h1>DOM Refresh</h1>
+
+    <h1 id="main-title">Original Title</h1>
+    <p class="description">This is the original text</p>
+    <button class="change-btn">change text</button>
+
+    <p class="item">apple</p>
+    <p class="item">banana</p>
+    <p class="item">orange</p>
+
+    <h1 id="title">Old Title</h1>
+
+    <div id="box"></div>
+
+    <h2 id="status">Not clicked yet</h2>
+    <button id="click-btn">Click me</button>
+
+    <input id="name-input" type="text" placeholder="Enter your name">
+    <p id="output">Your name will apear here</p>
+
+    <form id="signup-form">
+        <input id="email-input" type="email" placeholder="enter email" />
+        <button type="submit">Submit</button>
+    </form>
+
+    <p id="form-message"></p>
+
+
+    <section class="counter-section">
+        <h2>counter</h2>
+        <p id="counter-value">0</p>
+
+        <button id="decrease-btn">-</button>
+        <button id="reset-btn">reset</button>
+        <button id="increase-btn">+</button>
+        <button id="increase-five-btn">+5</button>
+        <button id="decrease-five-btn">-5</button>
+    </section>
+    
+
+    <section class="search-section">
+        <h2>Fruit search</h2>
+
+        <input id="search-input" type="text" placeholder="search fruits ..." />
+
+        <p id="result-count"></p>
+
+        <ul id="fruit-list"></ul>
+    </section>
+
+    <section class="exercise">
+        <h2 id="exe-title">exercise old heading</h2>
+        <button id="change-title-btn">Change Heading</button>
+    </section>
+
+    <section class="live-name">
+        <input id="exe-name-input" placeholder="enter your name" type="text" />
+        <p id="name-preview">your name is ...</p>
+    </section>
+
+    <script src="./script.js"></script>
+</body>
+</html>
