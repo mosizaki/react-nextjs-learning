@@ -1,3 +1,5 @@
+
+
 const fruits = [
     "Apple",
     "Banana",
@@ -10,6 +12,17 @@ const fruits = [
     "Blueberry",
     "Peach",
 
+]
+
+const users = [
+    "Ali",
+    "Sara",
+    "John",
+    "Mina",
+    "David",
+    "Reza",
+    "Sophia",
+    "Daniel",
 ]
 
 
@@ -50,6 +63,16 @@ const changeTitleBtn = document.querySelector('#change-title-btn')
 
 const exeNameInput = document.querySelector('#exe-name-input')
 const namePreview = document.querySelector('#name-preview')
+
+const passwordInput = document.querySelector('#password-input')
+const togglePassword = document.querySelector('#toggle-password-btn')
+
+const bioInput = document.querySelector('#bio-input')
+const charCount = document.querySelector('#char-count')
+
+const userInputSearch = document.querySelector('#user-input-search')
+const userCounts = document.querySelector('#user-counts')
+const userList = document.querySelector('#user-list')
 
 items.forEach((item) => {
     console.log(item.textContent)
@@ -158,4 +181,57 @@ changeTitleBtn.addEventListener("click", () => {
 
 exeNameInput.addEventListener("input", () => {
     namePreview.textContent = `your name is ${exeNameInput.value}`
+})
+
+
+togglePassword.addEventListener("click", () => {
+    togglePassType()
+})
+
+function togglePassType () {
+    if(passwordInput.type === "text") {
+        passwordInput.type = "password"
+        togglePassword.textContent = "show password"
+    } else {
+        passwordInput.type = "text"
+        togglePassword.textContent = "hide password"
+    }
+}
+
+
+bioInput.addEventListener("input", () => {
+    charCount.textContent = `${bioInput.value.length} characters` 
+})
+
+
+function renderUserList(userToRender) {
+    userList.innerHTML = ""
+
+    userToRender.forEach((user) => {
+        const li = document.createElement("li")
+        li.textContent = user
+        userList.appendChild(li)
+    })
+    
+    
+
+    if (userToRender.length === 0) {
+        userCounts.textContent = 'no users were found'
+    } else {
+        userCounts.textContent = `${userToRender.length} user(s) found`
+    }
+}
+
+
+
+renderUserList(users)
+
+userInputSearch.addEventListener("input", () => {
+    const searchUserInput = userInputSearch.value.toLowerCase()
+
+    const filteredUsers = users.filter((user) => {
+        return user.toLowerCase().includes(searchUserInput)
+    })
+
+    renderUserList(filteredUsers)
 })
