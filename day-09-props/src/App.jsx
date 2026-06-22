@@ -63,7 +63,7 @@ function App() {
       {
         products.map((product) => (
           <ProductCard
-            key={product.title}
+            key={product.id}
             name={product.name}
             price={product.price}
             category={product.category}
