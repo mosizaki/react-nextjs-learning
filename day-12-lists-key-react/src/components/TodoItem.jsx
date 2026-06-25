@@ -1,11 +1,15 @@
-function TodoItem({ todo, onDeleteTodo }) {
+function TodoItem({ todo, onDeleteTodo, onEditTodo }) {
   return (
-    <li>
-      {todo.text}
+    <li className="todo-item">
+      <div>
+        <strong>{todo.text}</strong>
+        <span className="category"> {todo.category}</span>
+      </div>
 
-      <button onClick={() => onDeleteTodo(todo.id)}>
-        Delete
-      </button>
+      <div className="todo-actions">
+        <button onClick={() => onEditTodo(todo)}>Edit</button>
+        <button onClick={() => onDeleteTodo(todo.id)}>Delete</button>
+      </div>
     </li>
   );
 }

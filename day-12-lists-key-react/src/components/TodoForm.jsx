@@ -2,6 +2,7 @@ import { useState } from "react";
 
 function TodoForm({ onAddTodo }) {
   const [todoText, setTodoText] = useState("");
+  const [todoCategory, setTodoCategory] = useState("study");
 
   function handleSubmit(event) {
     event.preventDefault();
@@ -10,18 +11,29 @@ function TodoForm({ onAddTodo }) {
       return;
     }
 
-    onAddTodo(todoText.trim());
+    onAddTodo(todoText.trim(), todoCategory);
+
     setTodoText("");
+    setTodoCategory("study");
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form className="todo-form" onSubmit={handleSubmit}>
       <input
         type="text"
         value={todoText}
         onChange={(event) => setTodoText(event.target.value)}
         placeholder="Enter a todo"
       />
+
+      <select
+        value={todoCategory}
+        onChange={(event) => setTodoCategory(event.target.value)}
+      >
+        <option value="study">Study</option>
+        <option value="work">Work</option>
+        <option value="personal">Personal</option>
+      </select>
 
       <button type="submit">Add Todo</button>
     </form>

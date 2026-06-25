@@ -1,20 +1,21 @@
 import TodoItem from "./TodoItem";
 
-function TodoList({ todos, onDeleteTodo }) {
+function TodoList({ todos, onDeleteTodo, onEditTodo }) {
+  if (todos.length === 0) {
+    return <p>No todos found.</p>;
+  }
+
   return (
-        todos.length === 0 ? (
-            <p>No Todos yet. add your todo</p>
-        ) : (
-            <ul>
-            {todos.map((todo) => (
-                <TodoItem
-                key={todo.id}
-                todo={todo}
-                onDeleteTodo={onDeleteTodo}
-                />
-            ))}
-            </ul>
-        )
+    <ul className="todo-list">
+      {todos.map((todo) => (
+        <TodoItem
+          key={todo.id}
+          todo={todo}
+          onDeleteTodo={onDeleteTodo}
+          onEditTodo={onEditTodo}
+        />
+      ))}
+    </ul>
   );
 }
 
