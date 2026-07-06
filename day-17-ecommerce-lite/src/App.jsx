@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import Navbar from "./components/Navbar";
+import ProductGrid from "./components/ProductGrid";
+import CartPanel from "./components/CartPanel";
 import "./App.css";
 
 function App() {
@@ -111,63 +114,20 @@ function App() {
 
   return (
     <div className="app">
-      <header className="navbar">
-        <h1>Ecommerce Lite</h1>
-
-        <button
-          className="cart-button"
-          onClick={() => setIsCartOpen(!isCartOpen)}
-        >
-          Cart ({totalCartQuantity})
-        </button>
-      </header>
+      <Navbar
+        totalCartQuantity={totalCartQuantity}
+        isCartOpen={isCartOpen}
+        onToggleCart={() => setIsCartOpen(!isCartOpen)}
+      />
 
       {isCartOpen && (
-        <section className="cart-panel">
-          <h2>Your Cart</h2>
-
-          {cart.length === 0 ? (
-            <p className="empty-cart">Your cart is empty.</p>
-          ) : (
-            <>
-              <div className="cart-items">
-                {cart.map((item) => (
-                  <div className="cart-item" key={item.id}>
-                    <img src={item.thumbnail} alt={item.title} />
-
-                    <div className="cart-item-info">
-                      <h3>{item.title}</h3>
-                      <p>${item.price}</p>
-
-                      <div className="quantity-controls">
-                        <button onClick={() => handleDecreaseQuantity(item.id)}>
-                          -
-                        </button>
-
-                        <span>{item.quantity}</span>
-
-                        <button onClick={() => handleIncreaseQuantity(item.id)}>
-                          +
-                        </button>
-                      </div>
-
-                      <button
-                        className="remove-button"
-                        onClick={() => handleRemoveFromCart(item.id)}
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              <div className="cart-total">
-                <strong>Total:</strong> ${totalCartPrice.toFixed(2)}
-              </div>
-            </>
-          )}
-        </section>
+        <CartPanel
+          cart={cart}
+          totalCartPrice={totalCartPrice}
+          onIncreaseQuantity={handleIncreaseQuantity}
+          onDecreaseQuantity={handleDecreaseQuantity}
+          onRemoveFromCart={handleRemoveFromCart}
+        />
       )}
 
       <main className="main-content">
@@ -178,23 +138,7 @@ function App() {
         {error && <p className="error">{error}</p>}
 
         {!loading && !error && (
-          <div className="product-grid">
-            {products.map((product) => (
-              <article className="product-card" key={product.id}>
-                <img src={product.thumbnail} alt={product.title} />
-
-                <div className="product-info">
-                  <h3>{product.title}</h3>
-                  <p className="description">{product.description}</p>
-                  <p className="price">${product.price}</p>
-
-                  <button onClick={() => handleAddToCart(product)}>
-                    Add to cart
-                  </button>
-                </div>
-              </article>
-            ))}
-          </div>
+          <ProductGrid products={products} onAddToCart={handleAddToCart} />
         )}
       </main>
     </div>

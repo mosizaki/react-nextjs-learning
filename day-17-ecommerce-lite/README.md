@@ -1,16 +1,38 @@
-# React + Vite
+# Ecommerce Lite React
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A beginner-friendly ecommerce React project that fetches product data from DummyJSON and allows users to add products to a cart.
 
-Currently, two official plugins are available:
+## Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+- Fetch products from an API
+- Loading state
+- Error state
+- Product grid
+- Add to cart
+- Cart indicator
+- Cart panel
+- Increase quantity
+- Decrease quantity
+- Remove item
+- Total cart price
 
-## React Compiler
+## What I practiced
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- useState
+- useEffect
+- Fetch API
+- map
+- find
+- filter
+- reduce
+- props
+- conditional rendering
+- derived state
 
-## Expanding the ESLint configuration
+## Important lesson
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+The products come from an external API, so they are fetched inside useEffect.
+
+The cart is controlled by user actions, so it is stored in React state.
+
+The cart total and cart quantity are derived from the cart array, so they do not need separate state.
