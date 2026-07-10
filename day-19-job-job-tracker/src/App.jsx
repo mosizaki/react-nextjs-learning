@@ -3,6 +3,101 @@ import './App.css'
 
 function App() {
   
+  const [jobs, setJobs] = useState([
+    {
+      id: 1,
+      company: "Google",
+      position: "Frontend Developer",
+      location: "Remote",
+      status: "applied",
+      date: "2026-07-08",
+      notes: "Applied through LinkedIn. Follow up next week.",
+    },
+    {
+      id: 2,
+      company: "Netflix",
+      position: "React Developer",
+      location: "Los Angeles, CA",
+      status: "interview",
+      date: "2026-07-10",
+      notes: "Recruiter call scheduled for Friday.",
+    },
+    {
+      id: 3,
+      company: "Shopify",
+      position: "Junior Frontend Engineer",
+      location: "Remote",
+      status: "rejected",
+      date: "2026-07-12",
+      notes: "Rejected after resume screening.",
+    },
+  ])
+
+  const [formData, setFormData] = useState({
+    company: "",
+    position: "",
+    location: "",
+    status: "applied",
+    date: "",
+    notes: ""
+  })
+
+  const [formError, setFormError] = useState("")
+
+  const totalJobs = jobs.length
+
+  const appliedCount = jobs.filter((job) => job.status === "applied").length
+
+  const interviewCount = jobs.filter((job) => job.status === "interview").length
+
+  const offerCount = jobs.filter((job) => job.status === "offer").length
+
+  const rejectedCount = jobs.filter((job) => job.status === "rejected").length
+
+  function handleInputChange(event) {
+    const { name, value } = event.target 
+    
+    setFormData((currentFormData) => {
+      return {
+        ...currentFormData,
+        [name]: value,
+      }
+    })
+
+    setFormError("")
+  }
+
+  function resetForm() {
+    setFormData({
+      company: "",
+      position: "",
+      location: "",
+      status: "applied",
+      date: "",
+      notes: "",
+    })
+  }
+
+  function handleSubmit(event) {
+    event.preventDefault()
+
+    if (formData.company.trim() === "" || formData.position.trim() === "") {
+      setFormError("Company and position are required!")
+      return
+    }
+
+    const newJob = {
+      id: Date.now(),
+      ...formData,
+    }
+
+    setJobs((currentJobs) => {
+      return [newJob, ...currentJobs]
+    })
+
+    setFormError("")
+    resetForm()
+  }
 
   return (
     <div className='app'>
@@ -22,40 +117,57 @@ function App() {
       <section className='stats-grid'>
         <div className="stat-card">
           <span>total</span>
-          <strong>1</strong>
+          <strong>{totalJobs}</strong>
         </div>
 
         <div className="stat-card">
           <span>applied</span>
-          <strong>1</strong>
+          <strong>{appliedCount}</strong>
         </div>
 
         <div className="stat-card">
           <span>Interview</span>
-          <strong>1</strong>
+          <strong>{interviewCount}</strong>
         </div>
 
         <div className="stat-card">
           <span>Offer</span>
-          <strong>1</strong>
+          <strong>{offerCount}</strong>
         </div>
 
         <div className="stat-card">
           <span>Rejected</span>
-          <strong>1</strong>
+          <strong>{rejectedCount}</strong>
         </div>
       </section>
 
       <section className="form-section">
         <h2>Add New Job</h2>
 
-        <form className='job-form'>
+        {formError && <p className='form-error'>{formError}</p>}
+
+        <form className='job-form' onSubmit={handleSubmit}>
+          <div className="form-group">
+            <label htmlFor="company">Company *</label>
+            <input
+              id="company"
+              type="text"
+              placeholder="Example: Google"
+              name='company'
+              value={formData.company}
+              onChange={handleInputChange}
+            />
+          </div>
+
           <div className="form-group">
             <label htmlFor="position">Posiotion *</label>
             <input 
               type="text" 
               id='position'
               placeholder='Example: FrontEnd Developer'
+              name='position'
+              value={formData.position}
+              onChange={handleInputChange}
             />
           </div>
 
@@ -65,12 +177,15 @@ function App() {
               id="location"
               type="text"
               placeholder="Example: Remote"
+              name='location'
+              value={formData.location}
+              onChange={handleInputChange}
             />
           </div>
 
           <div className="form-group">
             <label htmlFor="status">Status</label>
-            <select id="status">
+            <select id="status" name='status' value={formData.status} onChange={handleInputChange}>
               <option value="applied">Applied</option>
               <option value="interview">Interview</option>
               <option value="offer">Offer</option>
@@ -80,7 +195,7 @@ function App() {
 
           <div className="form-group">
             <label htmlFor="date">Date Applied</label>
-            <input id="date" type="date" />
+            <input id="date" type="date" name='date' value={formData.date} onChange={handleInputChange}/>
           </div>
 
           <div className="form-group full-width">
@@ -88,6 +203,9 @@ function App() {
             <textarea
               id="notes"
               placeholder="Example: Follow up next week..."
+              name='notes'
+              value={formData.notes}
+              onChange={handleInputChange}
             />
           </div>
 
@@ -97,6 +215,12 @@ function App() {
             </button>
           </div>
         </form>
+      </section>
+
+      <section className="debug-section">
+        <h2>Form Data Preview</h2>
+
+        <pre>{JSON.stringify(formData, null, 2)}</pre>
       </section>
 
       <section className="controls-section">
@@ -137,42 +261,46 @@ function App() {
         </div>
 
         <div className="jobs-list">
-          <article className="job-card">
-            <div className="job-card-header">
-              <div>
-                <h3>Frontend Developer</h3>
-                <p>Google</p>
+          {jobs.map((job) => (
+            <article className='job-card' key={job.id}>
+              <div className='job-card-header'>
+                <div>
+                  <h3>{job.position}</h3>
+                  <p>{job.company}</p>
+                </div>
+
+                <span className={`status-badge ${job.status}`}>
+                  {job.status}
+                </span>
               </div>
 
-              <span className="status-badge applied">
-                applied
-              </span>
-            </div>
+              <div className="job-meta">
+                {job.location && <span>📍 {job.location}</span>}
+                {job.date && <span>📅 {job.date}</span>}
+              </div>
 
-            <div className="job-meta">
-              <span>📍 Remote</span>
-              <span>📅 2026-07-08</span>
-            </div>
+              {job.notes && (
+                <p className='job-notes'>
+                  {job.notes}
+                </p>
+              )}
 
-            <p className="job-notes">
-              Applied through LinkedIn. Follow up next week.
-            </p>
+              <div className="job-card-actions">
+                <select defaultValue={job.status}>
+                  <option value="applied">Applied</option>
+                  <option value="interview">Interview</option>
+                  <option value="offer">Offer</option>
+                  <option value="rejected">Rejected</option>
+                </select>
 
-            <div className="job-card-actions">
-              <select defaultValue="applied">
-                <option value="applied">Applied</option>
-                <option value="interview">Interview</option>
-                <option value="offer">Offer</option>
-                <option value="rejected">Rejected</option>
-              </select>
+                <button>Edit</button>
 
-              <button>Edit</button>
-
-              <button className="danger-button">
-                Delete
-              </button>
-            </div>
-          </article>
+                <button className='danger-button'>
+                  Delete
+                </button>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     </div>

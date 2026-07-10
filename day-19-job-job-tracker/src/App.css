@@ -293,3 +293,31 @@ button {
     flex-direction: column;
   }
 }
+
+
+.debug-section {
+  margin-bottom: 24px;
+  padding: 24px;
+  background: #111827;
+  color: #d1d5db;
+  border-radius: 18px;
+}
+
+.debug-section h2 {
+  margin-top: 0;
+  color: white;
+}
+
+.debug-section pre {
+  overflow-x: auto;
+  margin: 0;
+  font-size: 14px;
+}
+
+.form-error {
+  padding: 10px 12px;
+  background: #fee2e2;
+  color: #991b1b;
+  border-radius: 10px;
+  font-weight: bold;
+}
