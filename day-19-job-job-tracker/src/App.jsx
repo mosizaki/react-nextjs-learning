@@ -44,6 +44,14 @@ function App() {
 
   const [formError, setFormError] = useState("")
 
+  const [editingJobId, setEditingJobId] = useState(null)
+
+  const [searchText, setSearchText] = useState("")
+  const [statusFilter, setStatusFilter] = useState("all")
+  const [sortOption, setSortOption] = useState("newest")
+
+
+
   const totalJobs = jobs.length
 
   const appliedCount = jobs.filter((job) => job.status === "applied").length
@@ -76,6 +84,9 @@ function App() {
       date: "",
       notes: "",
     })
+
+    setEditingJobId(null)
+    setFormError("")
   }
 
   function handleSubmit(event) {
@@ -83,6 +94,25 @@ function App() {
 
     if (formData.company.trim() === "" || formData.position.trim() === "") {
       setFormError("Company and position are required!")
+      return
+    }
+
+    if (editingJobId !== null) {
+      setJobs((currentJobs) => {
+        return currentJobs.map((job) => {
+          if (job.id === editingJobId) {
+            return {
+              ...job,
+              ...formData,
+            }
+          }
+
+          return job
+        })
+      })
+
+      setFormError("")
+      resetForm()
       return
     }
 
@@ -99,6 +129,107 @@ function App() {
     resetForm()
   }
 
+  function handleDeleteJob(jobId) {
+    setJobs((currentJobs) => (
+      currentJobs.filter((job) => job.id !== jobId)
+    ))
+
+    if (editingJobId === jobId) {
+      resetForm()
+    }
+  }
+
+  function handleEditJob(job) {
+    setEditingJobId(job.id)
+
+    setFormData({
+      company: job.company,
+      position: job.position,
+      location: job.location,
+      status: job.status,
+      date: job.date,
+      notes: job.notes,
+    })
+
+    setFormError("")
+  }
+
+  function handleStatusChange(jobId, newStatus) {
+    setJobs((currentJobs) => {
+      return currentJobs.map((job) => {
+        if (job.id === jobId) {
+          return {
+            ...job, 
+            status: newStatus,
+          }
+        }
+
+        return job
+      })
+    })
+
+    if (editingJobId === jobId) {
+      setFormData ((currentFormData) => {
+        return {
+          ...currentFormData,
+          status: newStatus,
+        }
+      })
+    }
+  }
+
+  const visibleJobs = jobs
+    .filter((job) => {
+      const searchMatches = 
+        job.company.toLowerCase().includes(searchText.toLowerCase()) ||
+        job.position.toLowerCase().includes(searchText.toLowerCase()) ||
+        job.location.toLowerCase().includes(searchText.toLowerCase())
+
+      const statusMatches = 
+        statusFilter === "all" || job.status === statusFilter
+
+      return searchMatches && statusMatches
+    })
+    .sort((a,b) => {
+      if (sortOption === "newest") {
+        return b.id - a.id
+      }
+
+      if (sortOption === "oldest") {
+        return a.id - b.id
+      }
+
+      if (sortOption === "company-a-z") {
+        return a.company.localeCompare(b.company)
+      }
+
+      return 0
+    })
+
+  function handleRestControls() {
+    setSearchText("")
+    setStatusFilter("all")
+    setSortOption("newest")
+  }
+
+  function handleClearAllJobs() {
+    const confirmed = window.confirm(
+      "Area you sure you want to delete all job applicatins?"
+    )
+
+    if(!confirmed) {
+      return
+    }
+
+    
+    setJobs([])
+    resetForm()
+    handleRestControls()
+  }
+
+  const hasActiveControls = 
+    searchText !== "" || statusFilter !== "all" || sortOption !== "newest"
+
   return (
     <div className='app'>
       <header className='app-header'>
@@ -108,9 +239,11 @@ function App() {
         </div>
 
         
-          <button className='danger-button'>
-            Clear All
-          </button>
+          {jobs.length > 0 && (
+            <button className='danger-button' onClick={handleClearAllJobs}>
+              Clear All
+            </button>
+          )}
         
       </header>
 
@@ -142,9 +275,15 @@ function App() {
       </section>
 
       <section className="form-section">
-        <h2>Add New Job</h2>
+        <h2>{editingJobId === null ? "Add New Job" : "Edit Job"}</h2>
 
         {formError && <p className='form-error'>{formError}</p>}
+
+        {editingJobId !== null && (
+          <p className='edit-mode-message'>
+            You are editing an existing job. Click Save Changes to update it.
+          </p>
+        )}
 
         <form className='job-form' onSubmit={handleSubmit}>
           <div className="form-group">
@@ -211,7 +350,17 @@ function App() {
 
           <div className="form-actions full-width">
             <button type="submit">
-              Add Job
+              {editingJobId === null ? "Add Job" : "Save Changes"}
+
+              {editingJobId !== null && (
+                <button
+                  type='button'
+                  className='secondary-button'
+                  onClick={resetForm}
+                >
+                  Cancel Edit
+                </button>
+              )}
             </button>
           </div>
         </form>
@@ -229,13 +378,19 @@ function App() {
           <input
             id="search"
             type="text"
+            value={searchText}
+            onChange={(event) => setSearchText(event.target.value)}
             placeholder="Search company, position, or location..."
           />
         </div>
 
         <div className="form-group">
           <label htmlFor="filter">Filter by status</label>
-          <select id="filter">
+          <select 
+            id="filter"
+            value={statusFilter}
+            onChange={(event) => setStatusFilter(event.target.value)}
+          >
             <option value="all">All</option>
             <option value="applied">Applied</option>
             <option value="interview">Interview</option>
@@ -246,62 +401,94 @@ function App() {
 
         <div className="form-group">
           <label htmlFor="sort">Sort</label>
-          <select id="sort">
+          <select 
+            id="sort"
+            value={sortOption}
+            onChange={(event) => setSortOption(event.target.value)}
+          >
             <option value="newest">Newest first</option>
             <option value="oldest">Oldest first</option>
             <option value="company-a-z">Company A-Z</option>
           </select>
         </div>
+
+        {hasActiveControls && (
+          <div className="form-group">
+            <label>Reset</label>
+
+            <button 
+              type='button'
+              className='secondary-button'
+              onClick={handleRestControls}
+            >
+              Resest Filters
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="jobs-section">
         <div className="section-header">
           <h2>Applications</h2>
-          <p>Showing 1 of 1</p>
+          <p>Showing {visibleJobs.length} of {jobs.length}</p>
         </div>
 
-        <div className="jobs-list">
-          {jobs.map((job) => (
-            <article className='job-card' key={job.id}>
-              <div className='job-card-header'>
-                <div>
-                  <h3>{job.position}</h3>
-                  <p>{job.company}</p>
+        {jobs.length > 0 && visibleJobs.length === 0 && (
+          <div className="empty-state">
+            <h3>No jobs yet</h3>
+            <p>Add your first job application using the form above!</p>
+          </div>
+        )}
+
+        {visibleJobs.length > 0 && (
+          <div className="jobs-list">
+            {visibleJobs.map((job) => (
+              <article className='job-card' key={job.id}>
+                <div className='job-card-header'>
+                  <div>
+                    <h3>{job.position}</h3>
+                    <p>{job.company}</p>
+                  </div>
+
+                  <span className={`status-badge ${job.status}`}>
+                    {job.status}
+                  </span>
                 </div>
 
-                <span className={`status-badge ${job.status}`}>
-                  {job.status}
-                </span>
-              </div>
+                <div className="job-meta">
+                  {job.location && <span>📍 {job.location}</span>}
+                  {job.date && <span>📅 {job.date}</span>}
+                </div>
 
-              <div className="job-meta">
-                {job.location && <span>📍 {job.location}</span>}
-                {job.date && <span>📅 {job.date}</span>}
-              </div>
+                {job.notes && (
+                  <p className='job-notes'>
+                    {job.notes}
+                  </p>
+                )}
 
-              {job.notes && (
-                <p className='job-notes'>
-                  {job.notes}
-                </p>
-              )}
+                <div className="job-card-actions">
+                  <select 
+                    defaultValue={job.status} 
+                    onChange={(event) => handleStatusChange(job.id, event.target.value)}
+                  >
+                    <option value="applied">Applied</option>
+                    <option value="interview">Interview</option>
+                    <option value="offer">Offer</option>
+                    <option value="rejected">Rejected</option>
+                  </select>
 
-              <div className="job-card-actions">
-                <select defaultValue={job.status}>
-                  <option value="applied">Applied</option>
-                  <option value="interview">Interview</option>
-                  <option value="offer">Offer</option>
-                  <option value="rejected">Rejected</option>
-                </select>
+                  <button onClick={() => handleEditJob(job)}>
+                    Edit
+                  </button>
 
-                <button>Edit</button>
-
-                <button className='danger-button'>
-                  Delete
-                </button>
-              </div>
-            </article>
-          ))}
-        </div>
+                  <button className='danger-button' onClick={() => handleDeleteJob(job.id)}>
+                    Delete
+                  </button>
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
       </section>
     </div>
   )
