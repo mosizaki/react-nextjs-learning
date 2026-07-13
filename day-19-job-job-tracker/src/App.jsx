@@ -221,7 +221,7 @@ function App() {
       return
     }
 
-    
+
     setJobs([])
     resetForm()
     handleRestControls()
@@ -433,10 +433,17 @@ function App() {
           <p>Showing {visibleJobs.length} of {jobs.length}</p>
         </div>
 
-        {jobs.length > 0 && visibleJobs.length === 0 && (
+        {jobs.length === 0 && (
           <div className="empty-state">
             <h3>No jobs yet</h3>
             <p>Add your first job application using the form above!</p>
+          </div>
+        )}
+
+        {jobs.length > 0 && visibleJobs.length === 0 && (
+          <div className="empty-state">
+            <h3>No matching jobs</h3>
+            <p>Try changing your search, filter, or sort option.</p>
           </div>
         )}
 
