@@ -1,12 +1,12 @@
-export default function Button ({
+export default function Button({
     children,
-    variant = "primary",
-    size = "md",
+    variant = 'primary',
+    size = 'md',
     disabled = false,
     onClick,
-    type = "button",
+    type = 'button',
 }) {
-    const baseClass = "btn"
+    const baseClass = 'btn'
 
     const variantClass = {
         primary: "btn-primary",
@@ -21,7 +21,7 @@ export default function Button ({
     }
 
     return (
-        <button 
+        <button
             type={type}
             disabled={disabled}
             onClick={onClick}

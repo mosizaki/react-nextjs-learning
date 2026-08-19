@@ -1,4 +1,4 @@
-export default function input ({
+export default function Input({
     label,
     value,
     onChange,
@@ -12,8 +12,8 @@ export default function input ({
             {label && <label className="input-label">{label}</label>}
 
             <input 
+                type={type} 
                 className={`input ${error ? "input-error" : ""}`}
-                type={type}
                 value={value}
                 onChange={onChange}
                 placeholder={placeholder}
