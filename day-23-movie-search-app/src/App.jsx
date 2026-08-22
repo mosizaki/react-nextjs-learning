@@ -35,9 +35,74 @@ const fakeMovies = [
   },
 ];
 
+function formatMovieFromApi (apiMovie) {
+  return {
+    id: String(apiMovie.trackId),
+    title: apiMovie.trackName || "Untitled movie",
+    year: apiMovie.releaseDate ? apiMovie.releaseDate.slice(0, 4) : "Unknown",
+    type: apiMovie.primaryGenreName || "Movie",
+    poster: apiMovie.artworkUrl100
+      ? apiMovie.artworkUrl100.replace("100x100", "300x300")
+      : "",
+    description:
+      apiMovie.longDescription ||
+      apiMovie.shortDescription ||
+      "No description available.",
+  }
+}
+
 function App() {
 
+  const [movies, setMovies] = useState(fakeMovies)
   const [searchText, setSearchText] = useState("")
+  const [submittedSearch, setSubmittedSearch] = useState("")
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
+
+
+  async function handleSearchSubmit(event) {
+    event.preventDefault()
+
+    const searchTerm = searchText.trim()
+
+    if (searchTerm === "") {
+      return
+    }
+
+    try {
+      setLoading(true)
+      setError("")
+      setSubmittedSearch(searchTerm)
+
+      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(
+        searchTerm
+      )}&media=movie&limit=12`
+
+      const response = await fetch(url)
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch movies.")
+      }
+
+      const data = await response.json()
+
+      const formattedMovies = data.results.map((apiMovie) => {
+        return formatMovieFromApi(apiMovie)
+      })
+
+      setMovies(formattedMovies)
+    } catch (err) {
+      setError(err.message)
+      setMovies([])
+    } finally {
+      setLoading(false)
+    }
+    
+
+    
+
+    setSubmittedSearch(searchText.trim())
+  }
   
   return (
     <div className='app'>
@@ -45,13 +110,17 @@ function App() {
 
       <main className='app-main'>
         <section className='left-column'>
-          <SearchBar searchText={searchText} onSearchTextChange={setSearchText}/>
+          <SearchBar searchText={searchText} onSearchTextChange={setSearchText} onSearchSubmit={handleSearchSubmit}/>
 
-          <p className='search-preview'>
-            Current search: {searchText || "nothing yet"}
-          </p>
+          <div className='search-preview'>
+            <p>Current input: <strong>{searchText || "nothing yet"}</strong></p>
 
-          <MovieGrid movies={fakeMovies}/>
+            <p>
+              Last submitted search:{" "}<strong>{submittedSearch || "nothing submitted yet"}</strong>
+            </p>
+          </div>
+
+          <MovieGrid movies={movies} loading={loading} error={error} submittedSearch={submittedSearch}/>
         </section>
 
         <aside className='right-column'>

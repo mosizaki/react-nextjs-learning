@@ -1,11 +1,15 @@
 import MovieCard from './MovieCard'
 
-function MovieGrid({movies}) {
+function MovieGrid({movies, loading, error, submittedSearch}) {
     return (
         <section className='movie-section'>
             <div className="section-header">
-                <h2>Movies</h2>
-                <p>Showing {movies.length} results</p>
+                <h2>
+                    {submittedSearch ? `Results for "${submittedSearch}"` : "Movies"}
+                </h2>
+                <p>
+                    {loading ? "Searching..." : `Showing ${movies.length} results`}
+                </p>
             </div>
 
             <div className="movie-grid">

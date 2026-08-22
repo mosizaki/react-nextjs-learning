@@ -1,9 +1,9 @@
-function SearchBar({searchText, onSearchTextChange}) {
+function SearchBar({searchText, onSearchTextChange, onSearchSubmit}) {
     return (
         <section className="search-section">
             <h2>Search movies</h2>
 
-            <form className="search-form" onSubmit={(event) => event.preventDefault()}>
+            <form className="search-form" onSubmit={onSearchSubmit}>
                 <input
                     type="text"
                     value={searchText}
