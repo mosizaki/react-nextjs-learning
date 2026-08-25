@@ -1,4 +1,4 @@
-function Header () {
+function Header ({watchlistCount}) {
     return (
         <header className="header">
             <div>
@@ -7,7 +7,7 @@ function Header () {
             </div>
 
             <div className="header-watchlist-count">
-                Watchlist: <strong>0</strong>
+                Watchlist: <strong>{watchlistCount}</strong>
             </div>
         </header>
     )

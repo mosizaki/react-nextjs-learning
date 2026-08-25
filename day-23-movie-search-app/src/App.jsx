@@ -4,6 +4,7 @@ import Header from './components/Header'
 import SearchBar from './components/SearchBar'
 import MovieGrid from './components/MovieGrid'
 import WatchListPanel from './components/WatchListPanel'
+import MovieDetailsModal from './components/MovieDetailsModal'
 
 const fakeMovies = [
   {
@@ -35,20 +36,19 @@ const fakeMovies = [
   },
 ];
 
-function formatMovieFromApi (apiMovie) {
+function formatMovieFromApi(apiItem) {
+  const show = apiItem.show;
+
   return {
-    id: String(apiMovie.trackId),
-    title: apiMovie.trackName || "Untitled movie",
-    year: apiMovie.releaseDate ? apiMovie.releaseDate.slice(0, 4) : "Unknown",
-    type: apiMovie.primaryGenreName || "Movie",
-    poster: apiMovie.artworkUrl100
-      ? apiMovie.artworkUrl100.replace("100x100", "300x300")
-      : "",
-    description:
-      apiMovie.longDescription ||
-      apiMovie.shortDescription ||
-      "No description available.",
-  }
+    id: String(show.id),
+    title: show.name || "Untitled",
+    year: show.premiered ? show.premiered.slice(0, 4) : "Unknown",
+    type: show.genres?.length > 0 ? show.genres.join(", ") : "TV Show",
+    poster: show.image?.medium || "",
+    description: show.summary
+      ? show.summary.replace(/<[^>]*>/g, "")
+      : "No description available.",
+  };
 }
 
 function App() {
@@ -58,6 +58,8 @@ function App() {
   const [submittedSearch, setSubmittedSearch] = useState("")
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const [selectedMovie, setSelectedMovie] = useState(null)
+  const [watchlist, setWatchlist] = useState([])
 
 
   async function handleSearchSubmit(event) {
@@ -72,11 +74,12 @@ function App() {
     try {
       setLoading(true)
       setError("")
+      setMovies([])
       setSubmittedSearch(searchTerm)
 
-      const url = `https://itunes.apple.com/search?term=${encodeURIComponent(
+      const url = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(
         searchTerm
-      )}&media=movie&limit=12`
+      )}`;
 
       const response = await fetch(url)
 
@@ -86,9 +89,11 @@ function App() {
 
       const data = await response.json()
 
-      const formattedMovies = data.results.map((apiMovie) => {
-        return formatMovieFromApi(apiMovie)
-      })
+      console.log(data)
+
+      const formattedMovies = data.map((apiItem) => {
+        return formatMovieFromApi(apiItem);
+      });
 
       setMovies(formattedMovies)
     } catch (err) {
@@ -97,20 +102,41 @@ function App() {
     } finally {
       setLoading(false)
     }
-    
+  }
 
-    
+  function handleCloseModal() {
+    setSelectedMovie(null)
+  }
 
-    setSubmittedSearch(searchText.trim())
+  function handleAddToWatchlist(movie) {
+    setWatchlist((currentWatchlist) => {
+      const movieAlreadyExists = currentWatchlist.some((watchlistMovie) => {
+        return watchlistMovie.id === movie.id
+      })
+
+      if (movieAlreadyExists) {
+        return currentWatchlist
+      }
+
+      return [movie, ...currentWatchlist]
+    })
+  }
+
+  function handleRemoveFromWatchlist(movieId) {
+    setWatchlist((currentWatchlist) => {
+      return currentWatchlist.filter((movie) => {
+        return movie.id !== movieId
+      })
+    })
   }
   
   return (
     <div className='app'>
-      <Header/>
+      <Header watchlistCount={watchlist.length}/>
 
       <main className='app-main'>
         <section className='left-column'>
-          <SearchBar searchText={searchText} onSearchTextChange={setSearchText} onSearchSubmit={handleSearchSubmit}/>
+          <SearchBar searchText={searchText} onSearchTextChange={setSearchText} onSearchSubmit={handleSearchSubmit} loading={loading}/>
 
           <div className='search-preview'>
             <p>Current input: <strong>{searchText || "nothing yet"}</strong></p>
@@ -120,13 +146,17 @@ function App() {
             </p>
           </div>
 
-          <MovieGrid movies={movies} loading={loading} error={error} submittedSearch={submittedSearch}/>
+          <MovieGrid movies={movies} loading={loading} error={error} submittedSearch={submittedSearch} onSelectMovie={setSelectedMovie} onAddToWatchlist={handleAddToWatchlist} watchlist={watchlist}/>
         </section>
 
         <aside className='right-column'>
-          <WatchListPanel />
+          <WatchListPanel watchlist={watchlist} onRemoveFromWatchlist={handleRemoveFromWatchlist} />
         </aside>
       </main>
+
+      {selectedMovie && (
+        <MovieDetailsModal movie={selectedMovie} onClose={handleCloseModal} onAddToWatchlist={handleAddToWatchlist} isInWatchlist={watchlist.some((watchlistMovie) => {return watchlistMovie.id === selectedMovie.id})} />
+      )}
     </div>
   )
 }

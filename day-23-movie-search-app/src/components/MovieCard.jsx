@@ -1,4 +1,4 @@
-function MovieCard({movie}) {
+function MovieCard({movie, onSelectMovie, onAddToWatchlist, isInWatchlist}) {
     return (
         <article className="movie-card">
             <div className="movie-poster">
@@ -21,12 +21,12 @@ function MovieCard({movie}) {
                 </p>
 
                 <div className="movie-actions">
-                    <button>
+                    <button onClick={() => onSelectMovie(movie)}>
                         Details
                     </button>
 
-                    <button className="secondary-button">
-                        + Watchlist
+                    <button className="secondary-button" onClick={() => onAddToWatchlist(movie)} disabled={isInWatchlist}> 
+                        {isInWatchlist ? "Saved" : "+ Watchlist"}
                     </button>
                 </div>
             </div>

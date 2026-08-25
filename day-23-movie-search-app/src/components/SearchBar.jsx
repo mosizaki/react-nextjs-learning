@@ -1,4 +1,4 @@
-function SearchBar({searchText, onSearchTextChange, onSearchSubmit}) {
+function SearchBar({searchText, onSearchTextChange, onSearchSubmit, loading}) {
     return (
         <section className="search-section">
             <h2>Search movies</h2>
@@ -11,7 +11,7 @@ function SearchBar({searchText, onSearchTextChange, onSearchSubmit}) {
                     placeholder="Search for Batman, Spiderman, Interstellar..."
                 />
 
-                <button type="submit">Search</button>
+                <button type="submit" disabled={loading}>{loading ? "Searching..." : "Search"}</button>
             </form>
         </section>
     )
