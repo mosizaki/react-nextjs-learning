@@ -1,14 +1,14 @@
 import MovieCard from './MovieCard'
 
-function MovieGrid({movies, loading, error, submittedSearch, onSelectMovie, onAddToWatchlist, watchlist}) {
+function MovieGrid({movies, loading, error, submittedSearch, onSelectMovie, onAddToWatchlist, watchlist, showWatchlistOnly}) {
     return (
         <section className='movie-section'>
             <div className="section-header">
                 <h2>
-                    {submittedSearch ? `Results for "${submittedSearch}"` : "Movies"}
+                    {showWatchlistOnly ? "Your Watchlist" : submittedSearch ? `Resutls for "${submittedSearch}"` : "Movies"}
                 </h2>
                 <p>
-                    {loading ? "Searching..." : `Showing ${movies.length} results`}
+                    {loading ? "Searching..." : showWatchlistOnly ? `${movies.length} saved` : `Showing ${movies.length} results`}
                 </p>
             </div>
 
@@ -28,8 +28,12 @@ function MovieGrid({movies, loading, error, submittedSearch, onSelectMovie, onAd
 
             {!loading && !error && movies.length === 0 && (
                 <div className="status-message">
-                    <h3>No movies found</h3>
-                    <p>Try searching for another movie title.</p>
+                    <h3>
+                        {showWatchlistOnly ? "Your watchlist is empty" : "No movies found"}
+                    </h3>
+                    <p>
+                        {showWatchlistOnly ? "Add movies from the search results to see them here." : "Add movies from the search results to see them here."}
+                    </p>
                 </div>
             )}
 

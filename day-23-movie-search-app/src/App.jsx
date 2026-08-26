@@ -60,6 +60,7 @@ function App() {
   const [error, setError] = useState("")
   const [selectedMovie, setSelectedMovie] = useState(null)
   const [watchlist, setWatchlist] = useState([])
+  const [showWatchlistOnly, setShowWatchlistOnly] = useState(false)
 
 
   async function handleSearchSubmit(event) {
@@ -76,6 +77,7 @@ function App() {
       setError("")
       setMovies([])
       setSubmittedSearch(searchTerm)
+      setShowWatchlistOnly(false)
 
       const url = `https://api.tvmaze.com/search/shows?q=${encodeURIComponent(
         searchTerm
@@ -129,6 +131,8 @@ function App() {
       })
     })
   }
+
+  const visibleMovies = showWatchlistOnly ? watchlist : movies
   
   return (
     <div className='app'>
@@ -146,7 +150,13 @@ function App() {
             </p>
           </div>
 
-          <MovieGrid movies={movies} loading={loading} error={error} submittedSearch={submittedSearch} onSelectMovie={setSelectedMovie} onAddToWatchlist={handleAddToWatchlist} watchlist={watchlist}/>
+          <div className="view-toggle">
+            <button type='button' className={showWatchlistOnly ? "secondary-button active-view" : "secondary-button"} onClick={() => setShowWatchlistOnly((currentValue) => !currentValue)}>
+              {showWatchlistOnly ? "Show all results" : "Show watclist only"}
+            </button>
+          </div>
+
+          <MovieGrid movies={visibleMovies} loading={loading} error={error} submittedSearch={submittedSearch} onSelectMovie={setSelectedMovie} onAddToWatchlist={handleAddToWatchlist} watchlist={watchlist} showWatchlistOnly={showWatchlistOnly}/>
         </section>
 
         <aside className='right-column'>

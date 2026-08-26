@@ -474,3 +474,18 @@ button:disabled {
   font-size: 12px;
   font-weight: bold;
 }
+
+.view-toggle {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.view-toggle button {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: bold;
+}
+
+.active-view {
+  outline: 2px solid #93c5fd;
+}
